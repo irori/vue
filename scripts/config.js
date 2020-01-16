@@ -103,6 +103,28 @@ const builds = {
     alias: { he: './entity-decoder' },
     banner
   },
+  // Runtime+compiler ES modules build (for direct import in browser, unbundled)
+  'web-full-esm-browser-unbundled-dev': {
+    entry: resolve('web/entry-runtime-with-compiler.js'),
+    destdir: resolve('dist/unbundled-dev'),
+    format: 'es',
+    preserveModules: true,
+    transpile: false,
+    env: 'development',
+    alias: { he: './entity-decoder' },
+    banner
+  },
+  // Runtime+compiler ES modules build (for direct import in browser, unbundled)
+  'web-full-esm-browser-unbundled-prod': {
+    entry: resolve('web/entry-runtime-with-compiler.js'),
+    destdir: resolve('dist/unbundled-prod'),
+    format: 'es',
+    preserveModules: true,
+    transpile: false,
+    env: 'production',
+    alias: { he: './entity-decoder' },
+    banner
+  },
   // runtime-only build (Browser)
   'web-runtime-dev': {
     entry: resolve('web/entry-runtime.js'),
@@ -218,12 +240,14 @@ function genConfig (name) {
   const config = {
     input: opts.entry,
     external: opts.external,
+    preserveModules: opts.preserveModules,
     plugins: [
       flow(),
       alias(Object.assign({}, aliases, opts.alias))
     ].concat(opts.plugins || []),
     output: {
       file: opts.dest,
+      dir: opts.destdir,
       format: opts.format,
       banner: opts.banner,
       name: opts.moduleName || 'Vue'

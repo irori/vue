@@ -14,7 +14,7 @@ let builds = require('./config').getAllBuilds()
 if (process.argv[2]) {
   const filters = process.argv[2].split(',')
   builds = builds.filter(b => {
-    return filters.some(f => b.output.file.indexOf(f) > -1 || b._name.indexOf(f) > -1)
+    return filters.some(f => (b.output.file && b.output.file.indexOf(f) > -1) || b._name.indexOf(f) > -1)
   })
 } else {
   // filter out weex builds by default
@@ -42,7 +42,12 @@ function build (builds) {
 
 function buildEntry (config) {
   const output = config.output
-  const { file, banner } = output
+  const { file, dir, banner } = output
+  if (dir) {
+    // TODO: minify outputs for prod
+    return rollup.rollup(config)
+      .then(bundle => bundle.write(output))
+  }
   const isProd = /(min|prod)\.js$/.test(file)
   return rollup.rollup(config)
     .then(bundle => bundle.generate(output))
